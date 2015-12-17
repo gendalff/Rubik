@@ -1,4 +1,4 @@
-Cube = function(container){
+function RubiksCube(container){
   var DEBUG_MODE = false;
   var scale = 1,
     edgeClasses=["blue","red","yellow","orange","white","green"],
@@ -92,17 +92,15 @@ Cube = function(container){
         {u:37, r:29, d:19, l:21, w:48, c:50, x:4, y:8, class:5, obj:undefined}, //52
         {u:38, r:17, d:18, l:33, w:51, c:47, x:5, y:8, class:5, obj:undefined}  //53
       ],
-      $move, $newPlaces,
+      $move,
       drag = false, dragInit = {x:0, y:0};
   function init(){
     for(var i = 0; i < 54; i++){
-        // sqS[i].obj = $("<div id=\""+i+"\" class=\"sq "+edgeClasses[sqS[i].class]+"\"></div>");
         sqS[i].obj = $("<div id=\""+i+"\" class=\"sq "+edgeClasses[sqS[i].class]+"\">"+(DEBUG_MODE?i:"")+"</div>");
         sqS[i].obj.css({left:(sqS[i].x*scale*50)+"px", top:(sqS[i].y*scale*50)+"px"});
         $("#container").append(sqS[i].obj);
     }
-    $(".sq").css({"width":(scale*45)+"px", "height":(scale*45)+"px", "border-radius": (9*scale)+"px", "border-width": scale*2+"px"})
-            .hover(mouseenter, mouseleave);
+    $(".sq").css({"width":(scale*45)+"px", "height":(scale*45)+"px", "border-radius": (9*scale)+"px", "border-width": scale*2+"px"});
     $("body").on({mousedown:mousedown, mouseup:mouseup, mousemove:mousemove});
 
   }
@@ -110,12 +108,6 @@ Cube = function(container){
 
   function mousedown(obj) {
     var id = parseInt(obj.target.id);
-    var newPlaces = sqS[sqS[id].u].obj.add(newPlaces)
-                                      .add(sqS[sqS[id].d].obj)
-                                      .add(sqS[sqS[id].l].obj)
-                                      .add(sqS[sqS[id].r].obj);
-    newPlaces.addClass("act");
-    $newPlaces = newPlaces;
     initDrag(obj);
   }
 
@@ -158,9 +150,7 @@ function initDrag(obj) {
   }
 
 function updatePosition(obj){
-  // dragInit.dir, dragInit.phase
   var toMove, index;
-  // var id = parseInt(obj.currentTarget.id);
   if(dragInit.toMove === undefined ){
     for(var i = 0; i < moves.length; i++){
       if(moves[i][dragInit.id]!==undefined && moves[i][dragInit.id].indexOf( dragInit.dir ) !== -1){
@@ -174,17 +164,13 @@ function updatePosition(obj){
       }
     }
     dragInit.toMove = toMove;
-    // dragInit.prev = dragInit.id + dragInit.dir;
   }
   countOffset(dragInit.toMove, dragInit.phase);
 }
 
   function countOffset(toMove, phase) {
     toMove.each(function(index, obj){
-       //from
-      // (sqS[obj.id].x + (sqS[obj.id[dragInit.dir]].x-sqS[obj.id].x)*dragInit.phase) //to
       var id = obj.id;
-      // sqS[sqS[id][ moves[i][id][index] ]]
       $(obj).css({left: ((sqS[id].x + (sqS[sqS[id][ moves[moves.i][id][moves.index] ]].x-sqS[id].x)*phase)*scale*50)+"px"
                  , top: ((sqS[id].y + (sqS[sqS[id][ moves[moves.i][id][moves.index] ]].y-sqS[id].y)*phase)*scale*50)+"px"});
     });
@@ -200,12 +186,7 @@ function updatePosition(obj){
   }
 
   function mouseup(obj) {
-    console.log("MOUSEUP FIRED")
     drag = false;
-    if($newPlaces){
-      $newPlaces.removeClass("act");
-      $newPlaces = undefined;
-    }
     if(dragInit.phase>0.5){
       countOffset(dragInit.toMove, 1);
       shiftObjects();
@@ -215,30 +196,10 @@ function updatePosition(obj){
     dragInit.toMove = undefined;
   }
 
-  function mouseenter(obj){
-    var toMove;
-    var id = parseInt(obj.currentTarget.id);
-    for(var i = 0; i < moves.length; i++){
-      if(moves[i][id]!==-1){
-        for(var ii = 0; ii < moves[i].length; ii++){
-          toMove = sqS[moves[i][ii]].obj.add(toMove);
-        }
-      }
-    }
-    $move = toMove;
-    // $move.addClass('hov');
-  }
-  function mouseleave(){
-    if($move){
-      $move.removeClass('hov');
-      $move = undefined;
-    }
-  }
-
   function cube(){
   }
   return {cube:cube};
 }
 function init(container) {
-  var cube = new Cube($("#"+container));
+  cube = new RubiksCube($("#"+container));
 }
